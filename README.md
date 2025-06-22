@@ -18,7 +18,7 @@ Este sistema permite registrar pacientes, gestionar citas médicas, emitir recet
 # Autores y colaboradores
 
 - Nicole Tito Huacho - n00362428
-- Jhon Atanacio - n
+- Jhon Atanacio - n00388283
 - Franco González – n00239230
 
 
