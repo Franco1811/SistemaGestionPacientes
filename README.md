@@ -12,8 +12,7 @@ Este sistema permite registrar pacientes, gestionar citas médicas, emitir recet
 
 1. Abre el proyecto en Visual Studio Code.
 2. Asegúrate de tener instalado Java y configurar el entorno.
-3. Ejecuta la clase `SistemaPacientes.java`.
-4. El archivo `pacientes.txt` se generará automáticamente para guardar datos.
+
 
 # Autores y colaboradores
 
