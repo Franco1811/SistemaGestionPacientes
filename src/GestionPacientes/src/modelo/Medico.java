@@ -1,8 +1,6 @@
 package modelo;
-
 import java.util.ArrayList;
 import java.util.List;
-
 public class Medico extends Persona {
 	private String Especialidad;
 	private static List<Medico> Medicos = new ArrayList<>();
@@ -75,12 +73,12 @@ public class Medico extends Persona {
 	public void setUsuario(Usuario usuario) {
 		Usuario = usuario;
 	}
-    
-
-
-	
-	
-	
-
-
+	public static Medico MedicoDeUsuario(Usuario usuario) {
+    	for (Medico e : BaseDatosSimulada.getListaMedicos()) {
+    	    if (e.getUsuario().equals(usuario)) {
+    	        return e;
+    	    }
+    	}
+    	return null; 
+    }
 }

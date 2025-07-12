@@ -2,17 +2,11 @@ package vista;
 
 import java.awt.Color;
 import java.awt.Cursor;
-
+import java.awt.Font;
+import java.awt.SystemColor;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-
-import java.awt.Font;
-import java.awt.SystemColor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.Frame;
-
 import herramientas.UtilidadesImagen;
 import modelo.BaseDatosSimulada;
 import modelo.Usuario;
@@ -100,18 +94,16 @@ public class InterfazLoginEmpleado extends JFrame {
             }
         });
 
-
-        //BOTON INICIAR SESION
+        // BOTON INICIAR SESION
         JButton btnIniciarsesion = new JButton("Iniciar sesion");
         btnIniciarsesion.setFont(new Font("Tahoma", Font.ITALIC, 12));
         btnIniciarsesion.setBounds(94, 362, 178, 41);
         btnIniciarsesion.setBorder(new LineBorder(Color.GRAY, 1, true));
         bg1.add(btnIniciarsesion);
         btnIniciarsesion.addActionListener(e -> login());
-        
-        btnIniciarsesion.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // manito al pasar el mouse
+        btnIniciarsesion.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-      //BOTON VOLVER
+        // BOTON VOLVER
         JButton btnVolver = new JButton("Volver");
         btnVolver.addActionListener(e -> {
             dispose();
@@ -124,12 +116,9 @@ public class InterfazLoginEmpleado extends JFrame {
         btnVolver.setFont(new Font("Tahoma", Font.ITALIC, 11));
         btnVolver.setBounds(10, 427, 72, 23);
         bg1.add(btnVolver);
-            
-            
+
         limpiarCampos();
-            
-        };
-    
+    }
 
     private void login() {
         String usuario = textField.getText();
@@ -140,29 +129,40 @@ public class InterfazLoginEmpleado extends JFrame {
         if (user != null) {
             JOptionPane.showMessageDialog(this, 
                 "Bienvenido " + user.getUserName() + "\nRol: " + user.getRol().getNombre());
-
-            if (user.getRol().getNombre().equals(Rol.ADMINISTRADOR)) {
-                InterfazAdmin admin = new InterfazAdmin(this);
-                admin.setVisible(true);
-            } else if (user.getRol().getNombre().equals(Rol.RECEPCIONISTA)) {
-                InterfazRecepcionista recep = new InterfazRecepcionista(this);
-                recep.setVisible(true);
-            } else if (user.getRol().getNombre().equals(Rol.FARMACEUTICO)) {
-            	InterfazFarmaceutico farm = new InterfazFarmaceutico(this);
-                farm.setVisible(true);
-            } else if (user.getRol().getNombre().equals(Rol.LABORATORIO)) {
-            	InterfazLaboratorio farm = new InterfazLaboratorio(this);
-                farm.setVisible(true);
-            } else {
-                JOptionPane.showMessageDialog(this, "No hay interfaz implementada para el rol: " + user.getRol().getNombre());
-                ventanaAnterior.setVisible(true);
+            InterfazMain.UsuarioActual(user);
+            switch (user.getRol().getNombre()) {
+                case Rol.ADMINISTRADOR:
+                    new InterfazAdmin(this).setVisible(true);
+                    break;
+                case Rol.RECEPCIONISTA:
+                    new InterfazRecepcionista(this).setVisible(true);
+                    break;
+                case Rol.FARMACEUTICO:
+                    new InterfazFarmaceutico(this).setVisible(true);
+                    break;
+                case Rol.LABORATORIO:
+                    new InterfazLaboratorio(this).setVisible(true);
+                    break;
+                case Rol.MEDICO:
+                    new InterfazMedico(this).setVisible(true);  
+                    break;
+                case Rol.ENFERMERO:
+                    new InterfazEnfermero(this).setVisible(true); 
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(this, 
+                        "No hay interfaz implementada para el rol: " + user.getRol().getNombre());
+                    if (ventanaAnterior != null) {
+                        ventanaAnterior.setVisible(true);
+                    }
+                    break;
             }
             dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Credenciales incorrectas o usuario inactivo.");
         }
     }
-    
+
     public void limpiarCampos() {
         textField.setText("Ingrese su nombre de usuario");
         textField.setForeground(SystemColor.activeCaptionBorder);
@@ -172,6 +172,4 @@ public class InterfazLoginEmpleado extends JFrame {
         passwordField.setForeground(Color.LIGHT_GRAY);
         passwordField.setFont(new Font("Tahoma", Font.ITALIC, 11));
     }
-
 }
-

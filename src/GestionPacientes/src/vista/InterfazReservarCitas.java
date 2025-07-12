@@ -10,8 +10,14 @@ import java.awt.*;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Arrays;
 
+import modelo.BaseDatosSimulada;
+import modelo.CitaMedica;
+import modelo.Medico;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class InterfazReservarCitas extends JFrame {
 
@@ -141,12 +147,25 @@ public class InterfazReservarCitas extends JFrame {
         JButton btnnuevacita = new JButton("NUEVA CITA");
         btnnuevacita.setBounds(76, 379, 120, 54);
         btnnuevacita.addActionListener(e -> {
+            String areaSeleccionada = (String) comboBoxareas.getSelectedItem();
+            String doctorSeleccionado = (String) comboBoxdoctor.getSelectedItem();
+            
+            if ("Seleccione área...".equals(areaSeleccionada)) {
+                JOptionPane.showMessageDialog(this, "Seleccione un área médica", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if ("Seleccione doctor...".equals(doctorSeleccionado)) {
+                JOptionPane.showMessageDialog(this, "Seleccione un médico", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
             InterfazNuevaCita ventanaNuevaCita = new InterfazNuevaCita(
                 this,
                 txtdnipaciente.getText(),
                 txtnombrecompleto.getText(),
-                (String) comboBoxareas.getSelectedItem(),
-                (String) comboBoxdoctor.getSelectedItem(),
+                areaSeleccionada,
+                doctorSeleccionado,
                 modeloTabla
             );
             ventanaNuevaCita.setVisible(true);
@@ -176,20 +195,26 @@ public class InterfazReservarCitas extends JFrame {
 
     private void inicializarMapaAreasDoctores() {
         mapaAreasDoctores = new HashMap<>();
-        mapaAreasDoctores.put("Cardiología", Arrays.asList("Dr. López", "Dra. Hernández"));
-        mapaAreasDoctores.put("Dermatología", Arrays.asList("Dr. Rivera", "Dra. Morales"));
-        mapaAreasDoctores.put("Endocrinología", Arrays.asList("Dr. Rojas", "Dra. Quintana"));
-        mapaAreasDoctores.put("Gastroenterología", Arrays.asList("Dr. Bravo", "Dra. Salinas"));
-        mapaAreasDoctores.put("Ginecología", Arrays.asList("Dr. Medina", "Dra. Flores"));
-        mapaAreasDoctores.put("Medicina General", Arrays.asList("Dr. Vargas", "Dra. Ruiz"));
-        mapaAreasDoctores.put("Neurología", Arrays.asList("Dr. Pérez", "Dra. Estrada"));
-        mapaAreasDoctores.put("Oftalmología", Arrays.asList("Dr. Torres", "Dra. Castro"));
-        mapaAreasDoctores.put("Otorrinolaringología", Arrays.asList("Dr. Jiménez", "Dra. León"));
-        mapaAreasDoctores.put("Pediatría", Arrays.asList("Dr. Gómez", "Dra. Castillo"));
-        mapaAreasDoctores.put("Psicología", Arrays.asList("Dr. Serrano", "Dra. Morales"));
-        mapaAreasDoctores.put("Psiquiatría", Arrays.asList("Dr. Salazar", "Dra. Mendoza"));
-        mapaAreasDoctores.put("Traumatología", Arrays.asList("Dr. Fuentes", "Dra. Cabrera"));
-        mapaAreasDoctores.put("Urología", Arrays.asList("Dr. Delgado", "Dra. Silva"));
+        
+        // Usa los médicos reales de la base de datos
+        BaseDatosSimulada.getListaMedicos().forEach(medico -> {
+            String area = medico.getEspecialidad();
+            String nombreCompleto = medico.getNombre() + " " + medico.getApellidoPaterno();
+            
+            if (!mapaAreasDoctores.containsKey(area)) {
+                mapaAreasDoctores.put(area, new ArrayList<>());
+            }
+            mapaAreasDoctores.get(area).add(nombreCompleto);
+        });
+        
+        // Ordena las áreas alfabéticamente
+        String[] areasOrdenadas = mapaAreasDoctores.keySet().stream()
+                .sorted()
+                .toArray(String[]::new);
+        
+        comboBoxareas.setModel(new DefaultComboBoxModel<>(areasOrdenadas));
+        comboBoxareas.insertItemAt("Seleccione área...", 0);
+        comboBoxareas.setSelectedIndex(0);
     }
 
     private void inicializarListeners() {
@@ -211,24 +236,113 @@ public class InterfazReservarCitas extends JFrame {
             String fecha,
             String hora,
             String area,
-            String medico,
+            String nombreMedico,
             String motivo
     ) {
-        DefaultTableModel model = (DefaultTableModel) tabla.getModel();
-
-        model.addRow(new Object[]{
-                contadorCitas,
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            Date fechaHora = sdf.parse(fecha + " " + hora);
+            
+            // Buscar el médico real por su nombre
+            Medico medico = BaseDatosSimulada.getListaMedicos().stream()
+                    .filter(m -> (m.getNombre() + " " + m.getApellidoPaterno()).equals(nombreMedico))
+                    .findFirst()
+                    .orElse(null);
+            
+            if (medico == null) {
+                JOptionPane.showMessageDialog(this, "Error: Médico no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            // Buscar paciente por DNI
+            Paciente paciente = BaseDatosSimulada.buscarPacientePorDNI(dni);
+            
+            if (paciente == null) {
+                JOptionPane.showMessageDialog(this, "Error: Paciente no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            // Crear y guardar la cita real
+            CitaMedica nuevaCita = new CitaMedica(
+                    0, // ID se asignará automáticamente
+                    paciente.getNombre() + " " + paciente.getApellidoPaterno(),
+                    area,
+                    medico,
+                    fechaHora,
+                    30, // Duración por defecto
+                    motivo,
+                    "Pendiente" // Estado inicial
+            );
+            
+            BaseDatosSimulada.agregarCita(nuevaCita);
+            
+            // Actualizar tabla local (opcional)
+            DefaultTableModel model = (DefaultTableModel) tabla.getModel();
+            SimpleDateFormat sdfFecha = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat sdfHora = new SimpleDateFormat("HH:mm");
+            
+            model.addRow(new Object[]{
+                nuevaCita.getID(),
                 dni,
-                medico,
-                fecha,
-                hora,
+                nombreMedico,
+                sdfFecha.format(fechaHora),
+                sdfHora.format(fechaHora),
                 area,
-                motivo,
-        });
-
-        contadorCitas++;
+                motivo
+            });
+            
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, 
+                "Error al procesar la cita: " + ex.getMessage(), 
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);
+        }
+        
     }
-    
+    private void cargarCitasPaciente() {
+        DefaultTableModel model = (DefaultTableModel) tabla.getModel();
+        model.setRowCount(0); // Limpiar tabla
+        
+        if (pacienteActual != null && pacienteActual.getDNI() != null) {
+            SimpleDateFormat sdfFecha = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat sdfHora = new SimpleDateFormat("HH:mm");
+            
+            List<CitaMedica> citas = BaseDatosSimulada.getCitasPorPaciente(pacienteActual.getDNI());
+            
+            if (citas != null) {
+                for (CitaMedica cita : citas) {
+                    if (cita == null) {
+                        System.err.println("Advertencia: Cita nula encontrada");
+                        continue;
+                    }
+                    
+                    // Manejar médico nulo
+                    String nombreMedico = "Médico no asignado";
+                    if (cita.getMedico() != null) {
+                        nombreMedico = cita.getMedico().getNombre() + " " + cita.getMedico().getApellidoPaterno();
+                    }
+                    
+                    // Manejar fecha nula
+                    String fechaStr = "";
+                    String horaStr = "";
+                    if (cita.getFechaHora() != null) {
+                        fechaStr = sdfFecha.format(cita.getFechaHora());
+                        horaStr = sdfHora.format(cita.getFechaHora());
+                    }
+                    
+                    model.addRow(new Object[]{
+                        cita.getID(),
+                        pacienteActual.getDNI(),
+                        nombreMedico,
+                        fechaStr,
+                        horaStr,
+                        cita.getEspecialidad(),
+                        cita.getMotivo() != null ? cita.getMotivo() : ""
+                    });
+                }
+            }
+        }
+    }
     
 
 

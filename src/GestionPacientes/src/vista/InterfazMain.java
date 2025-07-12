@@ -10,6 +10,7 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import herramientas.UtilidadesImagen;
+import modelo.Usuario;
 
 
 
@@ -18,12 +19,13 @@ public class InterfazMain extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-
+	static Usuario usuarioactual;
 
 	/**
 	 * Create the frame.
 	 */
 	public InterfazMain() {
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
         setTitle("Programa de hospital");
         setLocationRelativeTo(null);
@@ -129,5 +131,10 @@ public class InterfazMain extends JFrame {
     	new InterfazMain();
  
     }
-
+    public static void UsuarioActual(Usuario UsuarioAactual) {
+    	usuarioactual = UsuarioAactual;
+    }
+    public static Usuario GetUsuarioActual() {
+    	return usuarioactual;
+    }
 }
