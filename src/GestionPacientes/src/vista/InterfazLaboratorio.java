@@ -52,37 +52,37 @@ public class InterfazLaboratorio extends JFrame {
 		
 		//BOTON PARA REGISTRAR RESULTADOS
 		JButton btnregistrarresultados = new JButton("Registrar resultados");
-		btnregistrarresultados.setBounds(10, 162, 182, 101);
+		btnregistrarresultados.setBounds(10, 121, 182, 101);
 		bg10.add(btnregistrarresultados);
 		btnregistrarresultados.addActionListener(e -> {
-			//InterfazRegistrarResultadoLabo ventanaRegistrar = new InterfazRegistrarResultadoLabo(this);
-		    //ventanaRegistrar.setVisible(true);
-		    //this.setVisible(false);
+			InterfazRegistrarResultadoLabo ventanaRegistrar = new InterfazRegistrarResultadoLabo(this);
+		    ventanaRegistrar.setVisible(true);
+		    this.setVisible(false);
 		});
 		
 		//BOTON VISUALIZAR RESULTADOS
 		JButton btnvisualizarresultados = new JButton("Visualizar resultados");
-		btnvisualizarresultados.setBounds(226, 162, 182, 101);
+		btnvisualizarresultados.setBounds(222, 121, 182, 101);
 		bg10.add(btnvisualizarresultados);
 		btnvisualizarresultados.addActionListener(e -> {
-			//InterfazVisualizarResultadoLabo ventanaVisualizar = new InterfazVisualizarResultadoLabo(this);
-			//ventanaVisualizar.setVisible(true);
-		    //this.setVisible(false);
+			InterfazVisualizarResultadoLabo ventanaVisualizar = new InterfazVisualizarResultadoLabo(this);
+			ventanaVisualizar.setVisible(true);
+		    this.setVisible(false);
 		});
 		
 		//BOTON ALERTA
 		JButton btnAlerta = new JButton("Alerta resultados");
-		btnAlerta.setBounds(435, 162, 182, 101);
+		btnAlerta.setBounds(435, 121, 182, 101);
 		bg10.add(btnAlerta);
 		btnAlerta.addActionListener(e -> {			
-			//InterfazAlerta ventanaAlerta = new InterfazAlerta(this);
-			//ventanaAlerta.setVisible(true);
-		    //this.setVisible(false);
+			InterfazAlerta ventanaAlerta = new InterfazAlerta(this);
+			ventanaAlerta.setVisible(true);
+		    this.setVisible(false);
 		});
 		
 		//BOTON CERRAR SESION QUE ME LLLEVA A INTERFAZ LOGIN PERSONAL
 		JButton btnCerrarSesiOn = new JButton("Cerrar Sesión");
-		btnCerrarSesiOn.setBounds(339, 322, 135, 29);
+		btnCerrarSesiOn.setBounds(10, 322, 135, 29);
 		bg10.add(btnCerrarSesiOn);
 		btnCerrarSesiOn.addActionListener(e -> {
 		    InterfazLoginEmpleado login = new InterfazLoginEmpleado(null);

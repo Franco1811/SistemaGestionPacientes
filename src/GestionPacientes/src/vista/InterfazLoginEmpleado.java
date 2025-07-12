@@ -131,44 +131,37 @@ public class InterfazLoginEmpleado extends JFrame {
         };
     
 
-        private void login() {
-            String usuario = textField.getText().trim();
-            String contrasena = new String(passwordField.getPassword()).trim();
+    private void login() {
+        String usuario = textField.getText();
+        String contrasena = new String(passwordField.getPassword());
 
-            if (usuario.equals("") || usuario.equals("Ingrese su nombre de usuario")) {
-                JOptionPane.showMessageDialog(this, "Ingrese un nombre de usuario válido.");
-                return;
-            }
-            if (contrasena.equals("") || contrasena.equals("******")) {
-                JOptionPane.showMessageDialog(this, "Ingrese una contraseña válida.");
-                return;
-            }
+        Usuario user = BaseDatosSimulada.buscarUsuarioPorUsuarioYContrasena(usuario, contrasena);
 
-            Usuario user = BaseDatosSimulada.buscarUsuarioPorUsuarioYContrasena(usuario, contrasena);
+        if (user != null) {
+            JOptionPane.showMessageDialog(this, 
+                "Bienvenido " + user.getUserName() + "\nRol: " + user.getRol().getNombre());
 
-            if (user != null) {
-                JOptionPane.showMessageDialog(this,
-                    "Bienvenido " + user.getUserName() + "\nRol: " + user.getRol().getNombre());
-
-                if (user.getRol().getNombre().equals(Rol.ADMINISTRADOR)) {
-                    InterfazAdmin admin = new InterfazAdmin(this);
-                    admin.setVisible(true);
-                } else if (user.getRol().getNombre().equals(Rol.RECEPCIONISTA)) {
-                    InterfazRecepcionista recep = new InterfazRecepcionista(this);
-                    recep.setVisible(true);
-                } else if (user.getRol().getNombre().equals(Rol.FARMACEUTICO)) {
-                    InterfazFarmaceutico farm = new InterfazFarmaceutico(this);
-                    farm.setVisible(true);
-                } else {
-                    JOptionPane.showMessageDialog(this, "No hay interfaz implementada para el rol: " + user.getRol().getNombre());
-                    ventanaAnterior.setVisible(true);
-                }
-                dispose();
+            if (user.getRol().getNombre().equals(Rol.ADMINISTRADOR)) {
+                InterfazAdmin admin = new InterfazAdmin(this);
+                admin.setVisible(true);
+            } else if (user.getRol().getNombre().equals(Rol.RECEPCIONISTA)) {
+                InterfazRecepcionista recep = new InterfazRecepcionista(this);
+                recep.setVisible(true);
+            } else if (user.getRol().getNombre().equals(Rol.FARMACEUTICO)) {
+            	InterfazFarmaceutico farm = new InterfazFarmaceutico(this);
+                farm.setVisible(true);
+            } else if (user.getRol().getNombre().equals(Rol.LABORATORIO)) {
+            	InterfazLaboratorio farm = new InterfazLaboratorio(this);
+                farm.setVisible(true);
             } else {
-                JOptionPane.showMessageDialog(this, "Credenciales incorrectas o usuario inactivo.");
+                JOptionPane.showMessageDialog(this, "No hay interfaz implementada para el rol: " + user.getRol().getNombre());
+                ventanaAnterior.setVisible(true);
             }
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Credenciales incorrectas o usuario inactivo.");
         }
-
+    }
     
     public void limpiarCampos() {
         textField.setText("Ingrese su nombre de usuario");

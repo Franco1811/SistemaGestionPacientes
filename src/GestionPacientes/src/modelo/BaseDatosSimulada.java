@@ -14,9 +14,6 @@ public class BaseDatosSimulada {
     }
 
     public static List<Usuario> getUsuarios() {
-        for (Usuario u : listaUsuarios) {
-            System.out.println(u.getUserName() + " - " + u.getRol().getNombre());
-        }
         return listaUsuarios;
     }
 
